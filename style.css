@@ -1,0 +1,27 @@
+html {
+    background-color: #0f0f0f;
+}
+body {
+    background-color: black;
+    color: #121212;
+    padding: 30px;
+}
+div {
+    color: #f9f9f9;
+    font-size: 1.5em;
+}
+a {
+    color: #ffffff;
+}
+li {
+    font-size: 1.5em;
+}
+h1 {
+    font-size: 1.5em;
+}
+h2 {
+    font-size: 1.5em;
+}
+h3 {
+    font-size: 1.5em;
+}
