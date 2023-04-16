@@ -1,2 +1,2 @@
-# keix.github.io
-Python is Lisp however Lisp is not Python
+## keix.github.io
+This is my personal home page.
