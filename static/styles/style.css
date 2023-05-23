@@ -1,5 +1,6 @@
 html {
     background-color: #0f0f0f;
+    font-family: 'Playfair Display', serif;
 }
 body {
     background-color: black;
@@ -28,4 +29,8 @@ h3 {
 
 .footer {
     padding-top: 70px;
+}
+.github-logo {
+    margin: 0 0 0 0px;
+    height: 35px;
 }
