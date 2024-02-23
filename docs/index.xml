@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kei Sawamura</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on Kei Sawamura</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <managingEditor>keix.py@gmail.com (Kei Sawamura)</managingEditor>
+    <webMaster>keix.py@gmail.com (Kei Sawamura)</webMaster>
+    <lastBuildDate>Fri, 23 Feb 2024 15:26:49 +0900</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Fri, 23 Feb 2024 15:26:49 +0900</pubDate><author>keix.py@gmail.com (Kei Sawamura)</author>
+      <guid>http://localhost:1313/about/</guid>
+      <description>Profile I&amp;rsquo;m just a Geek!&#xA;My name is Kei Sawamura, and I work as a programmer.&#xA;KEY VALUE Name Kei Sawamura Age 45 Editor Vim Favorite Gentoo Linux Like Vocaloid, Anime, Surfing Address Kobe, Japan Works Programmer Infrastructure Engineer Motto Just because your friend shared it doesn&amp;rsquo;t mean it&amp;rsquo;s true.&#xA;Contact If you have any questions, feel free to ask me via SNS. I always join Quora while on the internet, and sometimes Instagram.</description>
+    </item>
+  </channel>
+</rss>
