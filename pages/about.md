@@ -19,4 +19,4 @@ making_label: github.com/keix/moonquakes
 making_desc: Zig で書いている Lua 5.4 のクリーンルーム実装。このサイトのビルドにも使っています。
 making_tags: [zig, lua]
 ---
-質問などは SNS から気軽にどうぞ。Threads にはいつもいて、Bluesky にもときどきいます。
+質問などは SNS から気軽にどうぞ。X にはいつもいて、Threads にもときどきいます。

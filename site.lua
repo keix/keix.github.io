@@ -31,13 +31,13 @@ return {
 
   sns = {
     { name = "GitHub", url = "https://github.com/keix", color = "ink" },
-    { name = "Bluesky", url = "https://bsky.app/profile/keix.bsky.social", color = "cyan", badge = "ときどき" },
-    { name = "Threads", url = "https://www.threads.net/@keix.py", color = "lavender", badge = "いつも" },
+    { name = "Bluesky", url = "https://bsky.app/profile/keix.bsky.social", color = "cyan" },
+    { name = "Threads", url = "https://www.threads.net/@keix.py", color = "lavender", badge = "ときどき" },
     { name = "Instagram", url = "https://www.instagram.com/keix.py/", color = "pink" },
     { name = "Medium", url = "https://medium.com/@keix.py", color = "lime" },
     { name = "Zenn", url = "https://zenn.dev/exelion", color = "yellow" },
     { name = "note", url = "https://note.com/hofchan", color = "orange" },
-    { name = "X", url = "https://x.com/hofchan", color = "ink" },
+    { name = "X", url = "https://x.com/hofchan", color = "ink", badge = "いつも" },
   },
 
   author_card = {
