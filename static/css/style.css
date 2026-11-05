@@ -1,4 +1,4 @@
-/* 眠れない夜に、コードを書く — keix.github.io */
+/* 眠れない夜にコードを書く。 — keix.github.io */
 
 :root {
   /* night */
@@ -334,6 +334,15 @@ a.chip:hover { color: var(--bg); filter: brightness(1.08); }
 .series-box li a[aria-current] { color: var(--yellow); border-left-color: var(--yellow); font-weight: 700; }
 .series-box .n { font-family: var(--mono); font-size: 12px; padding-top: 2px; flex: none; }
 
+.share { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; max-width: 700px; padding: 8px 0 56px; }
+.share .label { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--muted); }
+.share-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--c); color: var(--bg); transition: transform .2s ease;
+}
+.share-icon:hover { color: var(--bg); transform: translateY(-2px) rotate(-6deg); }
+
 .pager { padding: 56px 0; border-top: 2px solid var(--line); }
 .pager .card { gap: 10px; padding: 24px; }
 .pager .card .meta { font-size: 12px; }
@@ -546,8 +555,8 @@ a.chip:hover { color: var(--bg); filter: brightness(1.08); }
 /* ---------- motion and small screens ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .card, .tag-card, .sns a, .btn { transition: none; }
-  .card:hover, .tag-card:hover, .sns a:hover, .btn:hover { transform: none; }
+  .card, .tag-card, .sns a, .btn, .share-icon { transition: none; }
+  .card:hover, .tag-card:hover, .sns a:hover, .btn:hover, .share-icon:hover { transform: none; }
 }
 
 @media (max-width: 760px) {

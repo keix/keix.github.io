@@ -70,6 +70,11 @@ local function truncate(s, n)
   return s
 end
 
+-- Percent-encodes s byte by byte (UTF-8 stays valid), for query strings.
+local function urlencode(s)
+  return (s:gsub("[^%w%-%._~]", function(c) return ("%%%02X"):format(c:byte()) end))
+end
+
 local function entries(n)
   return n .. (n == 1 and " entry" or " entries")
 end
@@ -210,6 +215,11 @@ for i, name in ipairs(fs.dirs("posts")) do
           label = name .. " #" .. n,
           slug = name .. "/" .. n,
           url = series.url .. n .. "/",
+          -- Web Intents: plain links to each compose screen, no API or script
+          share_x = "https://x.com/intent/post?text=" .. urlencode(site.title .. " - " .. meta.title)
+            .. "&url=" .. urlencode(site.url .. series.url .. n .. "/"),
+          share_threads = "https://www.threads.net/intent/post?text="
+            .. urlencode(site.title .. " - " .. meta.title .. " " .. site.url .. series.url .. n .. "/"),
           title = meta.title,
           lead = meta.lead or false, -- false, not nil: keeps {{# lead }} from falling back to the series lead
           description = meta.lead or truncate(text, 120),
