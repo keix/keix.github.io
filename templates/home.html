@@ -38,7 +38,7 @@
 <a class="card card--feature" href="{{ url }}">
 <span class="chips">
 <span class="chip inverse">NEW</span>
-<span class="meta">{{ date }} · {{ minutes }} min</span>
+<span class="meta">{{ label }} · {{ date }} · {{ minutes }} min</span>
 </span>
 <span class="title">{{ title }}</span>
 {{# lead }}<span class="lead">{{ lead }}</span>{{/ lead }}
@@ -47,7 +47,7 @@
 {{/ featured }}
 {{# recent }}
 <a class="card" href="{{ url }}">
-<span class="meta">{{ date }} · {{ minutes }} min</span>
+<span class="meta">{{ label }} · {{ date }} · {{ minutes }} min</span>
 <span class="title">{{ title }}</span>
 {{# lead }}<span class="lead">{{ lead }}</span>{{/ lead }}
 <span class="chips">{{# tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ tag_list }}</span>

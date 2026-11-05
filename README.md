@@ -8,10 +8,22 @@ It also runs on the reference Lua 5.4, and both must produce the same output.
 
 ### Writing
 
-Add a Markdown file to `posts/`. The file name gives the date and the URL slug.
+Every post belongs to a series: one of my own projects, or one codebase I read.
+A series is a directory under `posts/`, and its posts are numbered 1, 2, 3, ... with no gaps.
+
+```
+posts/
+  moonquakes/
+    index.md            series title, lead, repo and intro (optional)
+    2026-11-05-1.md     → /posts/moonquakes/1/
+    2026-12-01-2.md     → /posts/moonquakes/2/
+```
+
+The build stops on a file directly in `posts/`, a name that is not `YYYY-MM-DD-<n>.md`,
+a duplicate number or a gap. Drafts count toward the numbering, so URLs never shift.
 
 ```markdown
-<!-- posts/2026-11-05-moonquakes-ssg.md → /posts/moonquakes-ssg/ -->
+<!-- posts/moonquakes/2026-11-05-1.md -->
 ---
 title: moonquakes でこのサイトをビルドする
 date: 2026-11-05          # optional, defaults to the file name
@@ -20,6 +32,17 @@ lead: 一覧やカードに出る短い説明。
 draft: true               # skipped unless built with --drafts
 ---
 本文を Markdown で書く。
+```
+
+```markdown
+<!-- posts/moonquakes/index.md -->
+---
+title: Moonquakes
+lead: シリーズの一覧ページとカードに出る説明。
+repo: https://github.com/keix/moonquakes
+color: yellow             # yellow, pink, cyan, lavender, lime or orange
+---
+シリーズの紹介文。
 ```
 
 Fenced code takes a language and an optional file name: ` ```lua lib/markdown.lua `.
@@ -53,10 +76,10 @@ Pushing to `main` runs `nix build .#site` on GitHub Actions and deploys the resu
 build.lua        entry point
 site.lua         settings
 lib/             markdown, frontmatter, template, highlight, fs
-templates/       base, home, post, list, tags, about, 404
+templates/       base, home, post, list, series, tags, about, 404
 static/          css, images, favicon (copied as is)
 tools/watch.sh   rebuild + live-reload loop behind `make watch` / `make dev`
-posts/           articles
+posts/           one directory per series
 pages/           about.md, 404.md
 ```
 
