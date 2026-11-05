@@ -31,6 +31,29 @@
 </section>
 {{/ has_profile }}
 
+{{# story }}
+<section class="about-section" aria-labelledby="story-title">
+<h2 id="story-title" class="h-section">How it started<span class="accent-pink">.</span></h2>
+<div class="story">
+<div class="story-body">
+<p class="story-text">{{ story }}</p>
+<a class="story-cta" href="/posts/">書いたものを読む →</a>
+</div>
+<svg class="story-ripple" viewBox="0 0 400 400" aria-hidden="true">
+<circle cx="200" cy="200" r="190" fill="none" stroke="#4FD8F0" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round" opacity=".45"></circle>
+<circle cx="200" cy="200" r="150" fill="none" stroke="#FF6FB5" stroke-width="2" stroke-dasharray="4 10" stroke-linecap="round" opacity=".6"></circle>
+<circle cx="200" cy="200" r="108" fill="none" stroke="#FFD84D" stroke-width="2.4" stroke-dasharray="8 9" stroke-linecap="round" opacity=".8"></circle>
+<circle cx="200" cy="200" r="66" fill="none" stroke="#B79CFF" stroke-width="2.8"></circle>
+<circle cx="200" cy="200" r="26" fill="#FFD84D"></circle>
+<circle cx="192" cy="193" r="5" fill="#F2C12E"></circle>
+<circle cx="209" cy="207" r="6.5" fill="#F2C12E"></circle>
+<circle cx="338" cy="76" r="8" fill="#B6F36B"></circle>
+<circle cx="64" cy="310" r="6" fill="#4FD8F0"></circle>
+</svg>
+</div>
+</section>
+{{/ story }}
+
 <section class="about-split">
 {{# work_name }}
 <div>
@@ -46,15 +69,7 @@
 </a>
 </div>
 {{/ work_name }}
-{{# motto }}
-<div>
-<h2 class="h-section">Motto<span class="accent-pink">.</span></h2>
-<p class="motto large">{{ motto }}</p>
-</div>
-{{/ motto }}
-</section>
-
-<section class="about-section contact">
+<div class="contact">
 <h2 class="h-section">Contact<span class="accent-lime">.</span></h2>
 <div class="prose">
 {{{ html }}}
@@ -63,5 +78,6 @@
 {{# site.sns }}<a href="{{ url }}" style="--c: {{ color }}">{{ name }}{{# badge }} <span class="badge">{{ badge }}</span>{{/ badge }}</a>
 {{/ site.sns }}
 </nav>
+</div>
 </section>
 {{/ page }}

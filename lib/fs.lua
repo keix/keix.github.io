@@ -56,4 +56,17 @@ function fs.list(dir, suffix)
   return names
 end
 
+-- Returns the sorted names of the subdirectories of dir.
+function fs.dirs(dir)
+  local names = {}
+  local p = io.popen("ls -1 -p " .. quote(dir) .. " 2>/dev/null")
+  if not p then return names end
+  for name in p:lines() do
+    if name:sub(-1) == "/" then names[#names + 1] = name:sub(1, -2) end
+  end
+  p:close()
+  table.sort(names)
+  return names
+end
+
 return fs

@@ -18,6 +18,21 @@
 </nav>
 </section>
 
+{{# has_series }}
+<section class="series-group" aria-labelledby="series-title">
+<h2 id="series-title" class="h-section">Series<span class="accent-pink">.</span></h2>
+<div class="grid-3">
+{{# series_list }}
+<a class="card series-card" href="{{ url }}" style="--c: {{ color }}">
+<span class="meta">{{ name }} · {{ count }}</span>
+<span class="title">{{ title }}</span>
+{{# lead }}<span class="lead">{{ lead }}</span>{{/ lead }}
+</a>
+{{/ series_list }}
+</div>
+</section>
+{{/ has_series }}
+
 {{# years }}
 <section class="year-group">
 <h2 class="year" style="--c: {{ color }}">{{ year }}</h2>
@@ -25,6 +40,7 @@
 <a class="row" href="{{ url }}">
 <span class="date">{{ month_day }}</span>
 <span class="body">
+<span class="series" style="--c: {{ series.color }}">{{ label }}</span>
 <span class="title">{{ title }}</span>
 {{# lead }}<span class="lead">{{ lead }}</span>{{/ lead }}
 </span>

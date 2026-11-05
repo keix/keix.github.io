@@ -27,6 +27,7 @@ return {
     gentoo = "lavender",
     vim = "lime",
     essay = "orange",
+    nix = "cyan",
   },
 
   sns = {

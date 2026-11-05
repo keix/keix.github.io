@@ -4,7 +4,7 @@
 --
 -- --live adds a script that reloads the page when /__live changes (tools/watch.sh).
 --
--- Reads posts/*.md and pages/*.md, renders templates/*.html and writes the site to
+-- Reads posts/<series>/*.md and pages/*.md, renders templates/*.html and writes the site to
 -- outdir (default: _site). Runs on moonquakes and on the reference Lua 5.4.
 
 package.path = "./?.lua;" .. package.path
@@ -154,41 +154,91 @@ local function tag_list(names)
 end
 
 ---------------------------------------------------------------------------
--- posts
+-- posts: every post belongs to a series, posts/<series>/YYYY-MM-DD-<n>.md
+--
+-- A series is one of my own projects (or one codebase I read). Its posts are
+-- numbered 1, 2, 3, ... with no gaps, and live at /posts/<series>/<n>/.
+-- posts/<series>/index.md optionally holds the series title, lead, repo and intro.
 
-local posts = {}
+local posts, series_list = {}, {}
 
 for _, file in ipairs(fs.list("posts", ".md")) do
-  local meta, body = frontmatter.parse(fs.read("posts/" .. file))
-  local stem = file:sub(1, -4)
-  local fdate, fslug = stem:match("^(%d%d%d%d%-%d%d%-%d%d)%-(.+)$")
-  local date = meta.date or fdate
-  assert(date and date:match("^%d%d%d%d%-%d%d%-%d%d$"), file .. ": date must be YYYY-MM-DD")
-  assert(meta.title, file .. ": title is required")
+  error("posts/" .. file .. ": posts go in a series, as posts/<series>/YYYY-MM-DD-<n>.md")
+end
 
-  if DRAFTS or meta.draft ~= true then
-    local slug = meta.slug or fslug or stem
-    local html, toc, has_code = render_markdown(body)
-    local text = plain_text(html)
-    local tags = type(meta.tags) == "table" and meta.tags or (meta.tags and { meta.tags }) or {}
-    posts[#posts + 1] = {
-      file = file,
-      slug = slug,
-      url = "/posts/" .. slug .. "/",
-      title = meta.title,
-      lead = meta.lead,
-      description = meta.lead or truncate(text, 120),
-      date = date,
-      year = date:sub(1, 4),
-      month_day = date:sub(6),
-      tags = tags,
-      tag_list = tag_list(tags),
-      html = html,
-      toc = toc,
-      has_toc = #toc > 1,
-      has_code = has_code,
-      minutes = math.max(1, math.floor((utf8.len(text) or #text) / 500 + 0.5)),
-    }
+for i, name in ipairs(fs.dirs("posts")) do
+  local dir = "posts/" .. name .. "/"
+  assert(name:match("^[a-z0-9][a-z0-9%-]*$"), dir .. ": series names are lowercase letters, digits and hyphens")
+
+  local smeta, intro = {}, ""
+  if fs.exists(dir .. "index.md") then smeta, intro = frontmatter.parse(fs.read(dir .. "index.md")) end
+  local series = {
+    name = name,
+    title = smeta.title or name,
+    lead = smeta.lead,
+    repo = smeta.repo,
+    repo_label = smeta.repo and (smeta.repo:gsub("^https?://", ""):gsub("/$", "")),
+    color = hex(smeta.color or cycle(PALETTE, i)),
+    url = "/posts/" .. name .. "/",
+    intro = (render_markdown(intro)),
+    posts = {},
+  }
+
+  local numbers, count = {}, 0
+  for _, file in ipairs(fs.list(dir, ".md")) do
+    if file ~= "index.md" then
+      local where = dir .. file
+      local fdate, n = file:match("^(%d%d%d%d%-%d%d%-%d%d)%-(%d+)%.md$")
+      assert(fdate, where .. ": name it YYYY-MM-DD-<n>.md, e.g. 2026-11-05-1.md")
+      n = tonumber(n)
+      assert(not numbers[n], where .. ": #" .. n .. " is already " .. tostring(numbers[n]))
+      numbers[n], count = where, count + 1
+
+      local meta, body = frontmatter.parse(fs.read(where))
+      local date = meta.date or fdate
+      assert(date:match("^%d%d%d%d%-%d%d%-%d%d$"), where .. ": date must be YYYY-MM-DD")
+      assert(meta.title, where .. ": title is required")
+
+      if DRAFTS or meta.draft ~= true then
+        local html, toc, has_code = render_markdown(body)
+        local text = plain_text(html)
+        local tags = type(meta.tags) == "table" and meta.tags or (meta.tags and { meta.tags }) or {}
+        local p = {
+          file = where,
+          series = series,
+          number = n,
+          label = name .. " #" .. n,
+          slug = name .. "/" .. n,
+          url = series.url .. n .. "/",
+          title = meta.title,
+          lead = meta.lead or false, -- false, not nil: keeps {{# lead }} from falling back to the series lead
+          description = meta.lead or truncate(text, 120),
+          date = date,
+          year = date:sub(1, 4),
+          month_day = date:sub(6),
+          tags = tags,
+          tag_list = tag_list(tags),
+          html = html,
+          toc = toc,
+          has_toc = #toc > 1,
+          has_code = has_code,
+          minutes = math.max(1, math.floor((utf8.len(text) or #text) / 500 + 0.5)),
+        }
+        posts[#posts + 1] = p
+        series.posts[#series.posts + 1] = p
+      end
+    end
+  end
+  -- numbers run 1..count with no gaps, drafts included, so URLs never shift
+  for n = 1, count do
+    assert(numbers[n], dir .. ": #" .. n .. " is missing; numbers run 1, 2, 3, ... with no gaps")
+  end
+
+  if #series.posts > 0 then
+    table.sort(series.posts, function(a, b) return a.number < b.number end)
+    series.count = entries(#series.posts)
+    series.latest = series.posts[#series.posts]
+    series_list[#series_list + 1] = series
   end
 end
 
@@ -197,12 +247,16 @@ table.sort(posts, function(a, b)
   return a.slug < b.slug
 end)
 
-local seen = {}
-for i, p in ipairs(posts) do
-  assert(not seen[p.slug], "duplicate slug: " .. p.slug)
-  seen[p.slug] = true
-  p.next = posts[i - 1] -- newer
-  p.prev = posts[i + 1] -- older
+-- prev / next walk the series, and each post carries the series table of contents
+for _, series in ipairs(series_list) do
+  local list = series.posts
+  for i, p in ipairs(list) do
+    p.prev, p.next = list[i - 1], list[i + 1]
+    p.episodes = {}
+    for j, q in ipairs(list) do
+      p.episodes[j] = { number = q.number, title = q.title, url = q.url, current = q == p }
+    end
+  end
 end
 
 -- related posts: most shared tags first, then newest
@@ -394,7 +448,7 @@ page("/", "home", {
 
 -- posts
 for _, p in ipairs(posts) do
-  page(p.url, "post", { post = p, prev = p.prev, next = p.next, related = p.related, has_related = #p.related > 0 }, {
+  page(p.url, "post", { post = p, prev = p.prev, next = p.next, series = p.series, related = p.related, has_related = #p.related > 0 }, {
     title = p.title,
     description = p.description,
     og_type = "article",
@@ -411,8 +465,18 @@ page("/posts/", "list", {
   count = entries(#posts),
   total = #posts,
   all_tags = all_tags(nil),
+  series_list = series_list,
+  has_series = #series_list > 0,
   years = by_year(posts),
 }, { title = "Posts", nav = "posts" })
+
+for _, series in ipairs(series_list) do
+  page(series.url, "series", { series = series }, {
+    title = series.title,
+    description = series.lead,
+    nav = "posts",
+  })
+end
 
 for _, name in ipairs(tags) do
   page("/tags/" .. name .. "/", "list", {
@@ -495,6 +559,7 @@ write("/index.xml", table.concat(rss, "\n"))
 
 local urls = { "/", "/posts/", "/tags/" }
 if about then urls[#urls + 1] = "/about/" end
+for _, series in ipairs(series_list) do urls[#urls + 1] = series.url end
 for _, p in ipairs(posts) do urls[#urls + 1] = p.url end
 for _, name in ipairs(tags) do urls[#urls + 1] = "/tags/" .. name .. "/" end
 local sitemap = { '<?xml version="1.0" encoding="utf-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' }
@@ -503,5 +568,5 @@ sitemap[#sitemap + 1] = "</urlset>\n"
 write("/sitemap.xml", table.concat(sitemap, "\n"))
 write("/robots.txt", "User-agent: *\nAllow: /\nSitemap: " .. site.url .. "/sitemap.xml\n")
 
-io.write(("built %d posts, %d tags, %d files into %s/ in %.0f ms (%s)\n"):format(
-  #posts, #tags, written, OUT, (os.clock() - started) * 1000, _VERSION))
+io.write(("built %d posts in %d series, %d tags, %d files into %s/ in %.0f ms (%s)\n"):format(
+  #posts, #series_list, #tags, written, OUT, (os.clock() - started) * 1000, _VERSION))

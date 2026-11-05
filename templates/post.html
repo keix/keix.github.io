@@ -2,9 +2,10 @@
 <section class="post-hero">
 <div class="moon" aria-hidden="true"><i></i><i></i><i></i></div>
 <nav class="crumbs" aria-label="パンくず">
-<a href="/posts/">posts</a><span aria-hidden="true">/</span><span aria-current="page">{{ slug }}</span>
+<a href="/posts/">posts</a><span aria-hidden="true">/</span><a href="{{ series.url }}">{{ series.name }}</a><span aria-hidden="true">/</span><span aria-current="page">{{ number }}</span>
 </nav>
 <div class="chips">
+<a class="chip series" href="{{ series.url }}" style="--c: {{ series.color }}">{{ label }}</a>
 {{# tag_list }}<a class="chip {{ tilt }}" href="{{ url }}" style="--c: {{ color }}">{{ name }}</a>
 {{/ tag_list }}
 <span class="meta"><time datetime="{{ date }}">{{ date }}</time> · {{ minutes }} min read</span>
@@ -26,6 +27,16 @@
 {{/ toc }}
 </nav>
 {{/ has_toc }}
+{{# series }}
+<nav class="series-box" aria-label="シリーズ {{ title }}">
+<span class="label">SERIES</span>
+<a class="name" href="{{ url }}">{{ title }}</a>
+<ol>
+{{# episodes }}<li><a href="{{ url }}"{{# current }} aria-current="page"{{/ current }}><span class="n">#{{ number }}</span>{{ title }}</a></li>
+{{/ episodes }}
+</ol>
+</nav>
+{{/ series }}
 {{# site.author_card }}
 <div class="author">
 <span class="label">WRITTEN BY</span>
@@ -44,7 +55,7 @@
 <div class="grid-3">
 {{# related }}
 <a class="card" href="{{ url }}">
-<span class="meta">{{ date }} · {{ minutes }} min</span>
+<span class="meta">{{ label }} · {{ date }} · {{ minutes }} min</span>
 <span class="title">{{ title }}</span>
 <span class="chips">{{# tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ tag_list }}</span>
 </a>
@@ -53,20 +64,20 @@
 </section>
 {{/ has_related }}
 
-<nav class="pager grid-2" aria-label="前後の記事">
+<nav class="pager grid-2" aria-label="シリーズの前後の回">
 {{# prev }}
 <a class="card" href="{{ url }}">
-<span class="meta">← 前の記事</span>
+<span class="meta">← #{{ number }} 前の回</span>
 <span class="title">{{ title }}</span>
 <span class="chips">{{# tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ tag_list }}</span>
 </a>
 {{/ prev }}
 {{# next }}
 <a class="card" href="{{ url }}">
-<span class="meta">次の記事 →</span>
+<span class="meta">次の回 #{{ number }} →</span>
 <span class="title">{{ title }}</span>
 <span class="chips">{{# tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ tag_list }}</span>
 </a>
 {{/ next }}
-<a class="card card--more" href="/posts/">記事一覧へ →</a>
+{{# series }}<a class="card card--more" href="{{ url }}">{{ title }} の一覧へ →</a>{{/ series }}
 </nav>
