@@ -1,0 +1,67 @@
+{{# page }}
+<section class="about-hero">
+<div class="text">
+<div class="chips">
+{{# role_list }}<span class="chip {{ tilt }}" style="--c: {{ color }}">{{ text }}</span>
+{{/ role_list }}
+</div>
+<h1 class="about-title">{{{ heading_html }}}</h1>
+{{# lead }}<p class="about-lead">{{ lead }}</p>{{/ lead }}
+<div class="btns">
+<a class="btn primary" href="/posts/">記事を読む</a>
+<a class="btn secondary" href="/tags/">タグから探す</a>
+</div>
+</div>
+<div class="avatar-wrap">
+<div class="ring" aria-hidden="true"></div>
+<div class="dot" aria-hidden="true" style="--c: var(--pink); --s: 22px; left: 12%; top: 12%;"></div>
+<div class="dot" aria-hidden="true" style="--c: var(--cyan); --s: 16px; right: 10%; bottom: 18%;"></div>
+<div class="dot" aria-hidden="true" style="--c: var(--lime); --s: 12px; right: 18%; top: 6%;"></div>
+{{# avatar }}<img class="avatar" src="{{ avatar }}" alt="{{ site.author }} のプロフィール写真" width="260" height="260">{{/ avatar }}
+</div>
+</section>
+
+{{# has_profile }}
+<section class="about-section">
+<h2 class="h-section">Profile<span class="accent-cyan">.</span></h2>
+<dl class="tiles wide">
+{{# profile_list }}<div class="tile" style="--c: {{ color }}"><dt>{{ key }}</dt><dd>{{ value }}</dd></div>
+{{/ profile_list }}
+</dl>
+</section>
+{{/ has_profile }}
+
+<section class="about-split">
+{{# making_name }}
+<div>
+<h2 class="h-section">Now making<span class="accent-yellow">.</span></h2>
+<a class="making" href="{{ making_url }}">
+<span class="head">
+<svg width="40" height="40" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#FFD84D"></circle><circle cx="7.5" cy="8" r="2" fill="#F2C12E"></circle><circle cx="14" cy="13.5" r="2.6" fill="#F2C12E"></circle></svg>
+{{ making_name }}
+</span>
+<span class="desc">{{ making_desc }}</span>
+<span class="chips">{{# making_tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ making_tag_list }}</span>
+<span class="link">{{ making_label }} →</span>
+</a>
+</div>
+{{/ making_name }}
+{{# motto }}
+<div>
+<h2 class="h-section">Motto<span class="accent-pink">.</span></h2>
+<p class="motto large">{{ motto }}</p>
+</div>
+{{/ motto }}
+</section>
+
+<section class="about-section contact">
+<h2 class="h-section">Contact<span class="accent-lime">.</span></h2>
+<div class="prose">
+{{{ html }}}
+</div>
+<nav class="sns" aria-label="SNS">
+{{# site.sns }}<a href="{{ url }}" style="--c: {{ color }}">{{ name }}{{# badge }} <span class="badge">{{ badge }}</span>{{/ badge }}</a>
+{{/ site.sns }}
+</nav>
+</section>
+{{/ page }}

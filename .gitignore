@@ -1,0 +1,5 @@
+_site/
+result
+.DS_Store
+.*.swp
+posts/2026-11-05-moonquakes-ssg.md
