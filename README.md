@@ -1,6 +1,6 @@
 ## keix.github.io
 
-眠れない夜に、コードを書く — Kei Sawamura's blog.
+眠れない夜にコードを書く。 — Kei Sawamura's blog.
 
 The site is built by a small static site generator written in Lua (`build.lua`),
 running on [moonquakes](https://github.com/keix/moonquakes), a Lua 5.4 implementation in Zig.

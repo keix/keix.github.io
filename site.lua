@@ -1,10 +1,12 @@
 -- Site settings. Edit freely; build.lua reads this table.
 
 return {
-  title = "眠れない夜に、コードを書く",
+  title = "眠れない夜にコードを書く。",
   url = "https://keix.github.io",
   host = "keix.github.io",
   author = "Kei Sawamura",
+  x_handle = "hofchan", -- twitter:site / twitter:creator on every page
+  og_image = "/img/og.png", -- 1200x630; with it set, X shows the large card
   description = "Kei Sawamura のブログ。Gentoo と Vim と Lua と、眠れない夜に書いたコードのこと。",
 
   home = {
