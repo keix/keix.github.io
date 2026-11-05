@@ -1,0 +1,73 @@
+<section class="hero">
+<div class="moon" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="dot" aria-hidden="true" style="--c: var(--pink); --s: 22px; right: 250px; top: 300px;"></div>
+<div class="dot" aria-hidden="true" style="--c: var(--cyan); --s: 14px; right: 10px; top: 20px;"></div>
+
+<div class="chips">
+{{# home.badges }}<span class="chip {{ tilt }}" style="--c: {{ color }}">{{ text }}</span>
+{{/ home.badges }}
+</div>
+<div class="hero-title-group">
+<h1 class="hero-title">{{{ home.title_html }}}</h1>
+<p class="hero-sub">{{ home.subtitle }}</p>
+</div>
+<p class="hero-lead">{{{ home.lead_html }}}</p>
+</section>
+
+{{# wave }}
+<figure class="wave">
+<svg viewBox="0 0 1200 100" preserveAspectRatio="none" aria-hidden="true">
+{{# lines }}<polyline fill="none" stroke="{{ color }}" stroke-width="{{ width }}" stroke-linejoin="round" stroke-linecap="round" points="{{ points }}"></polyline>
+{{/ lines }}
+</svg>
+<figcaption>
+<span>タグごとの公開ペース · {{ from }} – {{ to }}</span>
+{{# legend }}<span class="key" style="--c: {{ color }}">{{ tag }}</span>
+{{/ legend }}
+</figcaption>
+</figure>
+{{/ wave }}
+
+<section id="posts" class="home-posts">
+<div class="section-head">
+<h2 class="h-display">Posts<span class="accent-cyan">*</span></h2>
+<span class="note">{{ post_count }}</span>
+</div>
+<div class="grid-2">
+{{# featured }}
+<a class="card card--feature" href="{{ url }}">
+<span class="chips">
+<span class="chip inverse">NEW</span>
+<span class="meta">{{ date }} · {{ minutes }} min</span>
+</span>
+<span class="title">{{ title }}</span>
+{{# lead }}<span class="lead">{{ lead }}</span>{{/ lead }}
+<span class="chips">{{# tag_list }}<span class="chip inverse" style="--c: {{ color }}">{{ name }}</span>{{/ tag_list }}</span>
+</a>
+{{/ featured }}
+{{# recent }}
+<a class="card" href="{{ url }}">
+<span class="meta">{{ date }} · {{ minutes }} min</span>
+<span class="title">{{ title }}</span>
+{{# lead }}<span class="lead">{{ lead }}</span>{{/ lead }}
+<span class="chips">{{# tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ tag_list }}</span>
+</a>
+{{/ recent }}
+<a class="card card--more" href="/posts/">すべての記事を見る →</a>
+</div>
+</section>
+
+{{# about }}
+<section id="about" class="home-about">
+<div class="text">
+<h2 class="h-display">About<span class="accent-lime">!</span></h2>
+<p class="lead">{{ summary }}</p>
+{{# motto }}<p class="motto">{{ motto }}</p>{{/ motto }}
+<a class="more" href="/about/">プロフィールを見る →</a>
+</div>
+<dl class="tiles">
+{{# home_profile }}<div class="tile" style="--c: {{ color }}"><dt>{{ key }}</dt><dd>{{ value }}</dd></div>
+{{/ home_profile }}
+</dl>
+</section>
+{{/ about }}

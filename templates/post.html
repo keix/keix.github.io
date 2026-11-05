@@ -1,0 +1,72 @@
+{{# post }}
+<section class="post-hero">
+<div class="moon" aria-hidden="true"><i></i><i></i><i></i></div>
+<nav class="crumbs" aria-label="パンくず">
+<a href="/posts/">posts</a><span aria-hidden="true">/</span><span aria-current="page">{{ slug }}</span>
+</nav>
+<div class="chips">
+{{# tag_list }}<a class="chip {{ tilt }}" href="{{ url }}" style="--c: {{ color }}">{{ name }}</a>
+{{/ tag_list }}
+<span class="meta"><time datetime="{{ date }}">{{ date }}</time> · {{ minutes }} min read</span>
+</div>
+<h1 class="post-title">{{ title }}</h1>
+{{# lead }}<p class="post-lead">{{ lead }}</p>{{/ lead }}
+</section>
+
+<div class="post-layout">
+<article class="prose">
+{{{ html }}}
+</article>
+
+<aside class="post-aside" aria-label="目次と著者">
+{{# has_toc }}
+<nav class="toc" aria-label="目次">
+<span class="label">ON THIS PAGE</span>
+{{# toc }}<a href="#{{ id }}"{{# sub }} class="sub"{{/ sub }}>{{ text }}</a>
+{{/ toc }}
+</nav>
+{{/ has_toc }}
+{{# site.author_card }}
+<div class="author">
+<span class="label">WRITTEN BY</span>
+<a class="name" href="/about/">{{ name }}</a>
+<span class="bio">{{ bio }}</span>
+<a href="{{ url }}">{{ label }} →</a>
+</div>
+{{/ site.author_card }}
+</aside>
+</div>
+{{/ post }}
+
+{{# has_related }}
+<section class="related" aria-labelledby="related-title">
+<h2 id="related-title" class="h-section">Related<span class="accent-cyan">.</span></h2>
+<div class="grid-3">
+{{# related }}
+<a class="card" href="{{ url }}">
+<span class="meta">{{ date }} · {{ minutes }} min</span>
+<span class="title">{{ title }}</span>
+<span class="chips">{{# tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ tag_list }}</span>
+</a>
+{{/ related }}
+</div>
+</section>
+{{/ has_related }}
+
+<nav class="pager grid-2" aria-label="前後の記事">
+{{# prev }}
+<a class="card" href="{{ url }}">
+<span class="meta">← 前の記事</span>
+<span class="title">{{ title }}</span>
+<span class="chips">{{# tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ tag_list }}</span>
+</a>
+{{/ prev }}
+{{# next }}
+<a class="card" href="{{ url }}">
+<span class="meta">次の記事 →</span>
+<span class="title">{{ title }}</span>
+<span class="chips">{{# tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ tag_list }}</span>
+</a>
+{{/ next }}
+<a class="card card--more" href="/posts/">記事一覧へ →</a>
+</nav>

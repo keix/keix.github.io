@@ -1,0 +1,22 @@
+<section class="list-hero">
+<nav class="crumbs" aria-label="パンくず">
+<a href="/posts/">posts</a><span aria-hidden="true">/</span><span aria-current="page">tags</span>
+</nav>
+<div class="list-title-row">
+<h1 class="list-title">Tags<span class="accent-lime">.</span></h1>
+<span class="list-count">{{ tag_count }} · {{ total }}</span>
+</div>
+<p class="list-desc">円の大きさは記事の数。色はサイト全体で同じタグに同じ色を使っています。</p>
+</section>
+
+<div class="tag-grid">
+{{# all_tags }}
+<a class="tag-card" href="{{ url }}">
+<span class="ball" style="--c: {{ color }}; --s: {{ size }}">{{ count }}</span>
+<span class="body">
+<span class="name">#{{ name }}</span>
+<span class="latest">最新: {{ latest }}</span>
+</span>
+</a>
+{{/ all_tags }}
+</div>

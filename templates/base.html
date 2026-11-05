@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }}</title>
+<meta name="description" content="{{ description }}">
+<link rel="canonical" href="{{ canonical }}">
+<link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ site.url }}/index.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ description }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta property="og:site_name" content="{{ site.title }}">
+{{# site.og_image }}<meta property="og:image" content="{{ site.url }}{{ site.og_image }}">
+{{/ site.og_image }}<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Zen+Maru+Gothic:wght@500;700;900&amp;display=swap">
+<link rel="stylesheet" href="/css/style.css?v={{ build.stamp }}">
+</head>
+<body>
+<a class="skip" href="#main">本文へスキップ</a>
+<div class="wrap">
+
+<header class="site-header">
+<a class="brand" href="/">
+<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#FFD84D"></circle><circle cx="7.5" cy="8" r="2" fill="#F2C12E"></circle><circle cx="14" cy="13.5" r="2.6" fill="#F2C12E"></circle></svg>
+{{ site.host }}
+</a>
+<nav class="nav" aria-label="メイン">
+<a href="/posts/"{{# nav.posts }} aria-current="page"{{/ nav.posts }}>Posts</a>
+<a href="/about/"{{# nav.about }} aria-current="page"{{/ nav.about }}>About</a>
+<a href="/index.xml">RSS</a>
+</nav>
+</header>
+
+<main id="main">
+{{{ content }}}
+</main>
+
+<footer class="site-footer">
+{{# show_sns }}
+<nav class="sns" aria-label="SNS">
+{{# site.sns }}<a href="{{ url }}" style="--c: {{ color }}">{{ name }}</a>
+{{/ site.sns }}
+</nav>
+{{/ show_sns }}
+<nav class="footer-nav" aria-label="サイト内">
+<a href="/">Home</a>
+<a href="/posts/">Posts</a>
+<a href="/tags/">Tags</a>
+<a href="/about/">About</a>
+<a href="/index.xml">RSS</a>
+</nav>
+<p class="credit">built by moonquakes {{ build.runtime }} · Lua 5.4 on Zig · © {{ build.year }} {{ site.author }}</p>
+</footer>
+
+</div>
+{{# has_code }}
+<script>
+document.addEventListener("click", function (e) {
+  var b = e.target.closest(".code-copy");
+  if (!b) return;
+  var code = b.closest(".code").querySelector("pre code").cloneNode(true);
+  code.querySelectorAll(".ln").forEach(function (n) { n.remove(); });
+  navigator.clipboard.writeText(code.textContent).then(function () {
+    b.textContent = "コピーしました";
+    setTimeout(function () { b.textContent = "コピー"; }, 1600);
+  });
+});
+</script>
+{{/ has_code }}
+{{# has_toc }}
+<script>
+(function () {
+  var links = document.querySelectorAll(".toc a");
+  if (!("IntersectionObserver" in window) || !links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[decodeURIComponent(a.hash.slice(1))] = a; });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      links.forEach(function (a) { a.classList.remove("on"); });
+      var a = byId[en.target.id];
+      if (a) a.classList.add("on");
+    });
+  }, { rootMargin: "0px 0px -70% 0px" });
+  Object.keys(byId).forEach(function (id) {
+    var h = document.getElementById(id);
+    if (h) io.observe(h);
+  });
+})();
+</script>
+{{/ has_toc }}
+{{# build.live }}
+<script>
+(function () {
+  var seen = null;
+  setInterval(function () {
+    fetch("/__live", { cache: "no-store" }).then(function (r) { return r.ok ? r.text() : seen; })
+      .then(function (v) {
+        if (seen !== null && v !== seen) location.reload();
+        seen = v;
+      }).catch(function () {});
+  }, 800);
+})();
+</script>
+{{/ build.live }}
+</body>
+</html>
