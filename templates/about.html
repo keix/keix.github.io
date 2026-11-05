@@ -32,20 +32,20 @@
 {{/ has_profile }}
 
 <section class="about-split">
-{{# making_name }}
+{{# work_name }}
 <div>
-<h2 class="h-section">Now making<span class="accent-yellow">.</span></h2>
-<a class="making" href="{{ making_url }}">
+<h2 class="h-section">Work<span class="accent-yellow">.</span></h2>
+<a class="work" href="{{ work_url }}">
 <span class="head">
 <svg width="40" height="40" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#FFD84D"></circle><circle cx="7.5" cy="8" r="2" fill="#F2C12E"></circle><circle cx="14" cy="13.5" r="2.6" fill="#F2C12E"></circle></svg>
-{{ making_name }}
+{{ work_name }}
 </span>
-<span class="desc">{{ making_desc }}</span>
-<span class="chips">{{# making_tag_list }}<span class="chip" style="--c: {{ color }}">{{ name }}</span>{{/ making_tag_list }}</span>
-<span class="link">{{ making_label }} →</span>
+<span class="desc">{{ work_desc }}</span>
+<span class="chips">{{# work_chips }}<span class="chip" style="--c: {{ color }}">{{ text }}</span>{{/ work_chips }}</span>
+<span class="link">{{ work_label }} →</span>
 </a>
 </div>
-{{/ making_name }}
+{{/ work_name }}
 {{# motto }}
 <div>
 <h2 class="h-section">Motto<span class="accent-pink">.</span></h2>

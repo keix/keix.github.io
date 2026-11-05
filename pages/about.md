@@ -4,19 +4,20 @@ heading_html: I'm just<br>a <span class="accent-pink">Geek</span><span class="ac
 lead: Kei Sawamura です。神戸でプログラマ / インフラエンジニアをしています。眠れない夜は、たいてい Vim を開いて何かを書いています。
 summary: I'm just a Geek! 神戸在住のプログラマ / インフラエンジニア。Vocaloid、アニメ、サーフィンが好き。
 avatar: /img/keix.jpeg
+birthday: 1979-01-10
 roles: [Programmer, Infrastructure Engineer]
 profile:
   - NAME: Kei Sawamura
-  - AGE: 46
+  - AGE: auto
   - EDITOR: Vim
   - FAVORITE: Gentoo Linux
-  - LIKE: Vocaloid, Anime, Surfing
+  - LIKE: Anime, Surfing
   - ADDRESS: Kobe, Japan
 motto: Simple is better than complex.
-making_name: moonquakes
-making_url: https://github.com/keix/moonquakes
-making_label: github.com/keix/moonquakes
-making_desc: Zig で書いている Lua 5.4 のクリーンルーム実装。このサイトのビルドにも使っています。
-making_tags: [zig, lua]
+work_name: KEIX Co., Ltd.
+work_url: https://9th.tokyo/
+work_label: 9th.tokyo
+work_desc: ソフトウェアエンジニアリングの会社です。
+work_tags: [Software Engineering, Osaka]
 ---
 質問などは SNS から気軽にどうぞ。X にはいつもいて、Threads にもときどきいます。

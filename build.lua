@@ -109,6 +109,7 @@ end
 
 -- Wraps rendered content in the base layout and writes it.
 local function page(url, tpl, data, opts)
+  opts = opts or {}
   data.site, data.build = site, build
   local title = opts.title and (opts.title .. " | " .. site.title) or site.title
   write(url, T:render("base", {
@@ -120,7 +121,6 @@ local function page(url, tpl, data, opts)
     canonical = site.url .. url,
     og_type = opts.og_type or "website",
     nav = { posts = opts.nav == "posts", about = opts.nav == "about" },
-    show_sns = opts.show_sns or false,
     has_code = opts.has_code or false,
     has_toc = opts.has_toc or false,
   }))
@@ -335,12 +335,25 @@ local function read_page(name)
   return meta
 end
 
+-- Age on the build date in Japan time, from "YYYY-MM-DD".
+local function age(birthday)
+  local by, bm, bd = tostring(birthday):match("^(%d+)-(%d+)-(%d+)$")
+  if not by then error("birthday must be YYYY-MM-DD: " .. tostring(birthday)) end
+  local now = os.date("!*t", os.time() + 9 * 3600)
+  local years = now.year - tonumber(by)
+  if now.month * 100 + now.day < tonumber(bm) * 100 + tonumber(bd) then years = years - 1 end
+  return tostring(years)
+end
+
 local about = read_page("about")
 if about then
   local profile = {}
   for i, item in ipairs(type(about.profile) == "table" and about.profile or {}) do
     if type(item) == "table" then
-      profile[#profile + 1] = { key = item.key, value = item.value, color = hex(cycle({ "ink", "orange", "cyan", "lavender", "pink", "lime" }, i)) }
+      local value = item.value
+      -- AGE follows the birthday field, so it never goes stale between rebuilds
+      if item.key == "AGE" and about.birthday then value = age(about.birthday) end
+      profile[#profile + 1] = { key = item.key, value = value, color = hex(cycle({ "ink", "orange", "cyan", "lavender", "pink", "lime" }, i)) }
     end
   end
   local roles = {}
@@ -353,7 +366,11 @@ if about then
   -- the home page shows the tiles after NAME and AGE
   about.home_profile = {}
   for i = 3, math.min(6, #profile) do about.home_profile[#about.home_profile + 1] = profile[i] end
-  about.making_tag_list = tag_list(type(about.making_tags) == "table" and about.making_tags or {})
+  local work = {}
+  for i, w in ipairs(type(about.work_tags) == "table" and about.work_tags or {}) do
+    work[i] = { text = w, color = cycle({ "pink", "yellow", "cyan" }, i) }
+  end
+  about.work_chips = chips(work)
   about.heading_html = about.heading_html or escape(about.title or "About")
 end
 
@@ -373,7 +390,7 @@ page("/", "home", {
   post_count = entries(#posts),
   wave = wave(),
   about = about,
-}, { show_sns = true })
+})
 
 -- posts
 for _, p in ipairs(posts) do
