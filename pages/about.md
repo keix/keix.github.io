@@ -1,7 +1,7 @@
 ---
 title: About
 heading_html: I'm just<br>a <span class="accent-pink">Geek</span><span class="accent-yellow">!</span>
-lead: Kei Sawamura です。神戸でプログラマ / インフラエンジニアをしています。眠れない夜は、たいてい Vim を開いて何かを書いています。
+lead: Kei Sawamura です。神戸でプログラマ / インフラエンジニアをしています。眠れない夜は、たいてい Vim で何かを書いています。
 summary: I'm just a Geek! 神戸在住のプログラマ / インフラエンジニア。Vocaloid、アニメ、サーフィンが好き。
 avatar: /img/keix.jpeg
 birthday: 1979-01-10
@@ -14,10 +14,11 @@ profile:
   - LIKE: Anime, Surfing
   - ADDRESS: Kobe, Japan
 motto: Simple is better than complex.
+story: きっかけは、ある現場のチャンネルでした。夜な夜なコードを書いたり読んだりしたことを、そこで少しずつ共有し始めたのが始まりです。閉じたチャンネルの中だけで終わらせるのはもったいないと思い、今度は世界に向けて書くことにしました。
 work_name: KEIX Co., Ltd.
 work_url: https://9th.tokyo/
 work_label: 9th.tokyo
 work_desc: ソフトウェアエンジニアリングの会社です。
 work_tags: [Software Engineering, Osaka]
 ---
-質問などは SNS から気軽にどうぞ。X にはいつもいて、Threads にもときどきいます。
+いつもインターネットのどこかにいます。質問などは SNS から気軽にどうぞ。

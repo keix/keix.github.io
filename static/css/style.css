@@ -260,7 +260,6 @@ a.chip:hover { color: var(--bg); filter: brightness(1.08); }
   line-height: 1.2;
   transform: rotate(-1.5deg);
 }
-.motto.large { padding: 26px 30px; border-radius: 24px; font-size: 40px; line-height: 1.15; }
 
 /* ---------- home ---------- */
 
@@ -511,7 +510,19 @@ a.chip:hover { color: var(--bg); filter: brightness(1.08); }
 .work .desc { font-size: 16px; line-height: 1.85; color: var(--ink-3); }
 .work .link { font-family: var(--mono); font-size: 13px; color: var(--yellow); }
 
-.contact { padding-bottom: 72px; }
+.contact { display: flex; flex-direction: column; gap: 22px; }
+.about-split:last-child { padding-bottom: 72px; }
+
+/* How it started: the story beside a moonquake, rings spreading from the epicenter */
+.story {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px; align-items: center;
+  padding: 40px 44px; border-radius: 32px;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+}
+.story-body { display: flex; flex-direction: column; gap: 28px; }
+.story-text { margin: 0; font-size: 18px; line-height: 2; color: var(--ink-2); }
+.story-cta { align-self: flex-start; font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--yellow); }
+.story-ripple { width: 100%; max-width: 380px; justify-self: center; display: block; }
 .contact .prose { max-width: 36em; color: var(--ink-2); }
 
 /* ---------- 404 ---------- */
@@ -547,6 +558,9 @@ a.chip:hover { color: var(--bg); filter: brightness(1.08); }
   .card--feature .title { font-size: 28px; }
   .post-title { font-size: 34px; }
   .post-aside { display: none; }
+  .story { grid-template-columns: minmax(0, 1fr); padding: 28px 22px; border-radius: 24px; }
+  .story-text { font-size: 17px; }
+  .story-ripple { max-width: 240px; order: -1; }
   .list-title, .about-title { font-size: 64px; }
   .list-hero .moon { --r: 72px; right: 0; }
   .year { font-size: 56px; }
