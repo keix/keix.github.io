@@ -25,9 +25,23 @@ end
 
 local HEX = {
   yellow = "#FFD84D", pink = "#FF6FB5", cyan = "#4FD8F0", lavender = "#B79CFF",
-  lime = "#B6F36B", orange = "#FF8A3D", ink = "#F4F2FF",
+  lime = "#B6F36B", orange = "#FF8A3D", ink = "#F4F2FF", muted = "#B9B5DE",
+  -- 24 more for series, picked to stay apart from the six above and from each other
+  grass = "#62AE45", azure = "#00A2F0", blush = "#FFB6C7", mustard = "#C3B438",
+  teal = "#00B5B2", periwinkle = "#BFCCFF", orchid = "#C772CF", mint = "#9AE5B6",
+  coral = "#EA6A66", amber = "#C68D00", jade = "#59CB8B", iris = "#7F8CF9",
+  peach = "#FFC28E", cornflower = "#77B2FF", salmon = "#FD8A8F", mauve = "#E38FDB",
+  straw = "#D7D688", tangerine = "#E2781F", lilac = "#EDBDFC", olive = "#A39E00",
+  aqua = "#00CDBE", emerald = "#00B685", rose = "#E46894", violet = "#A87EEB",
 }
 local PALETTE = { "yellow", "pink", "cyan", "lavender", "lime", "orange" }
+-- series and tags each draw from these 30, so no two series and no two tags share one
+local UNIQUE_COLORS = {
+  "yellow", "pink", "cyan", "lavender", "lime", "orange",
+  "grass", "azure", "blush", "mustard", "teal", "periwinkle", "orchid", "mint",
+  "coral", "amber", "jade", "iris", "peach", "cornflower", "salmon", "mauve",
+  "straw", "tangerine", "lilac", "olive", "aqua", "emerald", "rose", "violet",
+}
 local TILTS = { "tilt-l", "tilt-r", "tilt-s" }
 
 local escape = template.escape
@@ -137,23 +151,48 @@ end
 for _, s in ipairs(site.sns) do s.color = hex(s.color) end
 site.home.badges = chips(site.home.badges)
 
-local tag_colors, next_color = {}, 1
-local function tag_color(name)
-  if not tag_colors[name] then
-    local c = site.tags[name]
-    if not c then
-      c = cycle(PALETTE, next_color)
-      next_color = next_color + 1
+-- Gives each item its own color. A pinned color (a palette name or #RRGGBB) is kept and
+-- may not repeat; the rest start at a slot picked from the name, so adding an item rarely
+-- moves anyone else, and step to the next free color in UNIQUE_COLORS.
+local function unique_colors(items, where)
+  local taken = {}
+  for _, item in ipairs(items) do
+    if item.pin then
+      local c = hex(item.pin)
+      assert(c:match("^#%x%x%x%x%x%x$"), where(item) .. ": color is a palette name or #RRGGBB, not " .. item.pin)
+      assert(not taken[c:upper()], where(item) .. ": color " .. item.pin .. " is already used by " .. tostring(taken[c:upper()]))
+      taken[c:upper()] = item.name
+      item.color = c
     end
-    tag_colors[name] = hex(c)
   end
+  for _, item in ipairs(items) do
+    if not item.color then
+      local start = 0
+      for k = 1, #item.name do start = (start * 31 + item.name:byte(k)) % #UNIQUE_COLORS end
+      for k = 0, #UNIQUE_COLORS - 1 do
+        local c = HEX[UNIQUE_COLORS[(start + k) % #UNIQUE_COLORS + 1]]
+        if not taken[c:upper()] then
+          taken[c:upper()] = item.name
+          item.color = c
+          break
+        end
+      end
+      assert(item.color, where(item) .. ": all " .. #UNIQUE_COLORS .. " colors are taken; pin one as #RRGGBB")
+    end
+  end
+end
+
+-- tag colors are resolved once every tag is known (see the tag index below)
+local tag_colors, tag_items, tag_names = {}, {}, {}
+local function tag_color(name)
   return tag_colors[name]
 end
 
 local function tag_list(names)
   local out = {}
   for i, name in ipairs(names) do
-    out[#out + 1] = { name = name, url = "/tags/" .. name .. "/", color = tag_color(name), tilt = cycle(TILTS, i) }
+    out[#out + 1] = { name = name, url = "/tags/" .. name .. "/", tilt = cycle(TILTS, i) }
+    tag_items[#tag_items + 1] = out[#out]
   end
   return out
 end
@@ -165,7 +204,7 @@ end
 -- numbered 1, 2, 3, ... with no gaps, and live at /posts/<series>/<n>/.
 -- posts/<series>/index.md optionally holds the series title, lead, repo and intro.
 
-local posts, series_list = {}, {}
+local posts, series_list, all_series = {}, {}, {}
 
 for _, file in ipairs(fs.list("posts", ".md")) do
   error("posts/" .. file .. ": posts go in a series, as posts/<series>/YYYY-MM-DD-<n>.md")
@@ -183,7 +222,7 @@ for i, name in ipairs(fs.dirs("posts")) do
     lead = smeta.lead,
     repo = smeta.repo,
     repo_label = smeta.repo and (smeta.repo:gsub("^https?://", ""):gsub("/$", "")),
-    color = hex(smeta.color or cycle(PALETTE, i)),
+    color = smeta.color, -- resolved below, once every series is known
     url = "/posts/" .. name .. "/",
     intro = (render_markdown(intro)),
     posts = {},
@@ -204,10 +243,12 @@ for i, name in ipairs(fs.dirs("posts")) do
       assert(date:match("^%d%d%d%d%-%d%d%-%d%d$"), where .. ": date must be YYYY-MM-DD")
       assert(meta.title, where .. ": title is required")
 
+      local tags = type(meta.tags) == "table" and meta.tags or (meta.tags and { meta.tags }) or {}
+      for _, t in ipairs(tags) do tag_names[t] = true end -- drafts count, so colors match with --drafts
+
       if DRAFTS or meta.draft ~= true then
         local html, toc, has_code = render_markdown(body)
         local text = plain_text(html)
-        local tags = type(meta.tags) == "table" and meta.tags or (meta.tags and { meta.tags }) or {}
         local p = {
           file = where,
           series = series,
@@ -244,6 +285,7 @@ for i, name in ipairs(fs.dirs("posts")) do
     assert(numbers[n], dir .. ": #" .. n .. " is missing; numbers run 1, 2, 3, ... with no gaps")
   end
 
+  all_series[#all_series + 1] = series
   if #series.posts > 0 then
     table.sort(series.posts, function(a, b) return a.number < b.number end)
     series.count = entries(#series.posts)
@@ -251,6 +293,10 @@ for i, name in ipairs(fs.dirs("posts")) do
     series_list[#series_list + 1] = series
   end
 end
+
+-- series colors never repeat; drafts count, so --drafts does not recolor anything
+for _, series in ipairs(all_series) do series.pin, series.color = series.color, nil end
+unique_colors(all_series, function(series) return "posts/" .. series.name .. "/index.md" end)
 
 table.sort(posts, function(a, b)
   if a.date ~= b.date then return a.date > b.date end
@@ -304,6 +350,15 @@ table.sort(tags, function(a, b)
   return a < b
 end)
 
+do
+  local items = {}
+  for name in pairs(tag_names) do items[#items + 1] = { name = name, pin = site.tags[name] } end
+  table.sort(items, function(a, b) return a.name < b.name end)
+  unique_colors(items, function(item) return "site.lua tags." .. item.name end)
+  for _, item in ipairs(items) do tag_colors[item.name] = item.color end
+  for _, item in ipairs(tag_items) do item.color = tag_colors[item.name] end
+end
+
 local function all_tags(current)
   local out = {}
   for _, name in ipairs(tags) do
@@ -335,16 +390,49 @@ local function by_year(list)
 end
 
 ---------------------------------------------------------------------------
--- the seismograph on the home page: one line per top tag, amplitude = posts per month
+-- the seismograph on the home page: one line per series, amplitude = posts per month.
+-- Only series with posts in the window are drawn; the busiest (site.home.wave_series,
+-- default 5) get their own line, ties going to the most recent, and the rest share one.
 
 local function wave()
-  if #posts == 0 or #tags == 0 then return nil end
+  if #posts == 0 or #series_list == 0 then return nil end
   local function month_index(date)
     return tonumber(date:sub(1, 4)) * 12 + tonumber(date:sub(6, 7)) - 1
   end
   local last = month_index(os.date("%Y-%m-%d"))
   local first = math.max(math.min(month_index(posts[#posts].date), last - 11), last - 35)
   local span = last - first + 1
+
+  local active = {}
+  for _, series in ipairs(series_list) do
+    local recent, newest = {}, ""
+    for _, p in ipairs(series.posts) do
+      if month_index(p.date) >= first then
+        recent[#recent + 1] = p
+        if p.date > newest then newest = p.date end
+      end
+    end
+    if #recent > 0 then
+      active[#active + 1] = { name = series.name, color = series.color, posts = recent, newest = newest }
+    end
+  end
+  if #active == 0 then return nil end
+  table.sort(active, function(a, b)
+    if #a.posts ~= #b.posts then return #a.posts > #b.posts end
+    if a.newest ~= b.newest then return a.newest > b.newest end
+    return a.name < b.name
+  end)
+
+  local max = site.home.wave_series or 5
+  local shown = {}
+  for i = 1, math.min(max, #active) do shown[i] = active[i] end
+  if #active > max then
+    local rest = {}
+    for i = max + 1, #active do
+      for _, p in ipairs(active[i].posts) do rest[#rest + 1] = p end
+    end
+    shown[#shown + 1] = { name = "other", color = HEX.muted, posts = rest }
+  end
 
   local seed = 7
   local function rand()
@@ -353,12 +441,11 @@ local function wave()
   end
 
   local lines = {}
-  for t = 1, math.min(3, #tags) do
-    local name = tags[t]
+  for t, entry in ipairs(shown) do
     local counts = {}
-    for _, p in ipairs(by_tag[name]) do
+    for _, p in ipairs(entry.posts) do
       local m = month_index(p.date) - first
-      if m >= 0 then counts[m] = (counts[m] or 0) + 1 end
+      counts[m] = (counts[m] or 0) + 1
     end
     local pts = {}
     for x = 0, 1200, 8 do
@@ -374,14 +461,14 @@ local function wave()
       pts[#pts + 1] = ("%d,%.1f"):format(x, y)
     end
     table.insert(lines, 1, {
-      tag = name,
-      color = tag_color(name),
+      tag = entry.name,
+      color = entry.color,
       width = t == 1 and "2.8" or "2.4",
       points = table.concat(pts, " "),
     })
   end
   local function label(m) return ("%04d.%02d"):format(m // 12, m % 12 + 1) end
-  -- legend in rank order, drawing order reversed so the top tag is on top
+  -- legend in rank order, drawing order reversed so the top series is on top
   local legend = {}
   for i = #lines, 1, -1 do legend[#legend + 1] = lines[i] end
   return { lines = lines, legend = legend, from = label(first), to = label(last) }
