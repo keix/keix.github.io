@@ -30,6 +30,8 @@ return {
     vim = "lime",
     essay = "orange",
     nix = "cyan",
+    forth = "orange",
+    c = "lime",
   },
 
   sns = {
