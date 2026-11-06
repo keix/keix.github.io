@@ -25,7 +25,7 @@ end
 
 local HEX = {
   yellow = "#FFD84D", pink = "#FF6FB5", cyan = "#4FD8F0", lavender = "#B79CFF",
-  lime = "#B6F36B", orange = "#FF8A3D", ink = "#F4F2FF",
+  lime = "#B6F36B", orange = "#FF8A3D", ink = "#F4F2FF", muted = "#B9B5DE",
 }
 local PALETTE = { "yellow", "pink", "cyan", "lavender", "lime", "orange" }
 local TILTS = { "tilt-l", "tilt-r", "tilt-s" }
@@ -335,16 +335,49 @@ local function by_year(list)
 end
 
 ---------------------------------------------------------------------------
--- the seismograph on the home page: one line per top tag, amplitude = posts per month
+-- the seismograph on the home page: one line per series, amplitude = posts per month.
+-- Only series with posts in the window are drawn; the busiest (site.home.wave_series,
+-- default 5) get their own line, ties going to the most recent, and the rest share one.
 
 local function wave()
-  if #posts == 0 or #tags == 0 then return nil end
+  if #posts == 0 or #series_list == 0 then return nil end
   local function month_index(date)
     return tonumber(date:sub(1, 4)) * 12 + tonumber(date:sub(6, 7)) - 1
   end
   local last = month_index(os.date("%Y-%m-%d"))
   local first = math.max(math.min(month_index(posts[#posts].date), last - 11), last - 35)
   local span = last - first + 1
+
+  local active = {}
+  for _, series in ipairs(series_list) do
+    local recent, newest = {}, ""
+    for _, p in ipairs(series.posts) do
+      if month_index(p.date) >= first then
+        recent[#recent + 1] = p
+        if p.date > newest then newest = p.date end
+      end
+    end
+    if #recent > 0 then
+      active[#active + 1] = { name = series.name, color = series.color, posts = recent, newest = newest }
+    end
+  end
+  if #active == 0 then return nil end
+  table.sort(active, function(a, b)
+    if #a.posts ~= #b.posts then return #a.posts > #b.posts end
+    if a.newest ~= b.newest then return a.newest > b.newest end
+    return a.name < b.name
+  end)
+
+  local max = site.home.wave_series or 5
+  local shown = {}
+  for i = 1, math.min(max, #active) do shown[i] = active[i] end
+  if #active > max then
+    local rest = {}
+    for i = max + 1, #active do
+      for _, p in ipairs(active[i].posts) do rest[#rest + 1] = p end
+    end
+    shown[#shown + 1] = { name = "other", color = HEX.muted, posts = rest }
+  end
 
   local seed = 7
   local function rand()
@@ -353,12 +386,11 @@ local function wave()
   end
 
   local lines = {}
-  for t = 1, math.min(3, #tags) do
-    local name = tags[t]
+  for t, entry in ipairs(shown) do
     local counts = {}
-    for _, p in ipairs(by_tag[name]) do
+    for _, p in ipairs(entry.posts) do
       local m = month_index(p.date) - first
-      if m >= 0 then counts[m] = (counts[m] or 0) + 1 end
+      counts[m] = (counts[m] or 0) + 1
     end
     local pts = {}
     for x = 0, 1200, 8 do
@@ -374,14 +406,14 @@ local function wave()
       pts[#pts + 1] = ("%d,%.1f"):format(x, y)
     end
     table.insert(lines, 1, {
-      tag = name,
-      color = tag_color(name),
+      tag = entry.name,
+      color = entry.color,
       width = t == 1 and "2.8" or "2.4",
       points = table.concat(pts, " "),
     })
   end
   local function label(m) return ("%04d.%02d"):format(m // 12, m % 12 + 1) end
-  -- legend in rank order, drawing order reversed so the top tag is on top
+  -- legend in rank order, drawing order reversed so the top series is on top
   local legend = {}
   for i = #lines, 1, -1 do legend[#legend + 1] = lines[i] end
   return { lines = lines, legend = legend, from = label(first), to = label(last) }
