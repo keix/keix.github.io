@@ -26,8 +26,22 @@ end
 local HEX = {
   yellow = "#FFD84D", pink = "#FF6FB5", cyan = "#4FD8F0", lavender = "#B79CFF",
   lime = "#B6F36B", orange = "#FF8A3D", ink = "#F4F2FF", muted = "#B9B5DE",
+  -- 24 more for series, picked to stay apart from the six above and from each other
+  grass = "#62AE45", azure = "#00A2F0", blush = "#FFB6C7", mustard = "#C3B438",
+  teal = "#00B5B2", periwinkle = "#BFCCFF", orchid = "#C772CF", mint = "#9AE5B6",
+  coral = "#EA6A66", amber = "#C68D00", jade = "#59CB8B", iris = "#7F8CF9",
+  peach = "#FFC28E", cornflower = "#77B2FF", salmon = "#FD8A8F", mauve = "#E38FDB",
+  straw = "#D7D688", tangerine = "#E2781F", lilac = "#EDBDFC", olive = "#A39E00",
+  aqua = "#00CDBE", emerald = "#00B685", rose = "#E46894", violet = "#A87EEB",
 }
 local PALETTE = { "yellow", "pink", "cyan", "lavender", "lime", "orange" }
+-- series and tags each draw from these 30, so no two series and no two tags share one
+local UNIQUE_COLORS = {
+  "yellow", "pink", "cyan", "lavender", "lime", "orange",
+  "grass", "azure", "blush", "mustard", "teal", "periwinkle", "orchid", "mint",
+  "coral", "amber", "jade", "iris", "peach", "cornflower", "salmon", "mauve",
+  "straw", "tangerine", "lilac", "olive", "aqua", "emerald", "rose", "violet",
+}
 local TILTS = { "tilt-l", "tilt-r", "tilt-s" }
 
 local escape = template.escape
@@ -137,23 +151,48 @@ end
 for _, s in ipairs(site.sns) do s.color = hex(s.color) end
 site.home.badges = chips(site.home.badges)
 
-local tag_colors, next_color = {}, 1
-local function tag_color(name)
-  if not tag_colors[name] then
-    local c = site.tags[name]
-    if not c then
-      c = cycle(PALETTE, next_color)
-      next_color = next_color + 1
+-- Gives each item its own color. A pinned color (a palette name or #RRGGBB) is kept and
+-- may not repeat; the rest start at a slot picked from the name, so adding an item rarely
+-- moves anyone else, and step to the next free color in UNIQUE_COLORS.
+local function unique_colors(items, where)
+  local taken = {}
+  for _, item in ipairs(items) do
+    if item.pin then
+      local c = hex(item.pin)
+      assert(c:match("^#%x%x%x%x%x%x$"), where(item) .. ": color is a palette name or #RRGGBB, not " .. item.pin)
+      assert(not taken[c:upper()], where(item) .. ": color " .. item.pin .. " is already used by " .. tostring(taken[c:upper()]))
+      taken[c:upper()] = item.name
+      item.color = c
     end
-    tag_colors[name] = hex(c)
   end
+  for _, item in ipairs(items) do
+    if not item.color then
+      local start = 0
+      for k = 1, #item.name do start = (start * 31 + item.name:byte(k)) % #UNIQUE_COLORS end
+      for k = 0, #UNIQUE_COLORS - 1 do
+        local c = HEX[UNIQUE_COLORS[(start + k) % #UNIQUE_COLORS + 1]]
+        if not taken[c:upper()] then
+          taken[c:upper()] = item.name
+          item.color = c
+          break
+        end
+      end
+      assert(item.color, where(item) .. ": all " .. #UNIQUE_COLORS .. " colors are taken; pin one as #RRGGBB")
+    end
+  end
+end
+
+-- tag colors are resolved once every tag is known (see the tag index below)
+local tag_colors, tag_items, tag_names = {}, {}, {}
+local function tag_color(name)
   return tag_colors[name]
 end
 
 local function tag_list(names)
   local out = {}
   for i, name in ipairs(names) do
-    out[#out + 1] = { name = name, url = "/tags/" .. name .. "/", color = tag_color(name), tilt = cycle(TILTS, i) }
+    out[#out + 1] = { name = name, url = "/tags/" .. name .. "/", tilt = cycle(TILTS, i) }
+    tag_items[#tag_items + 1] = out[#out]
   end
   return out
 end
@@ -165,7 +204,7 @@ end
 -- numbered 1, 2, 3, ... with no gaps, and live at /posts/<series>/<n>/.
 -- posts/<series>/index.md optionally holds the series title, lead, repo and intro.
 
-local posts, series_list = {}, {}
+local posts, series_list, all_series = {}, {}, {}
 
 for _, file in ipairs(fs.list("posts", ".md")) do
   error("posts/" .. file .. ": posts go in a series, as posts/<series>/YYYY-MM-DD-<n>.md")
@@ -183,7 +222,7 @@ for i, name in ipairs(fs.dirs("posts")) do
     lead = smeta.lead,
     repo = smeta.repo,
     repo_label = smeta.repo and (smeta.repo:gsub("^https?://", ""):gsub("/$", "")),
-    color = hex(smeta.color or cycle(PALETTE, i)),
+    color = smeta.color, -- resolved below, once every series is known
     url = "/posts/" .. name .. "/",
     intro = (render_markdown(intro)),
     posts = {},
@@ -204,10 +243,12 @@ for i, name in ipairs(fs.dirs("posts")) do
       assert(date:match("^%d%d%d%d%-%d%d%-%d%d$"), where .. ": date must be YYYY-MM-DD")
       assert(meta.title, where .. ": title is required")
 
+      local tags = type(meta.tags) == "table" and meta.tags or (meta.tags and { meta.tags }) or {}
+      for _, t in ipairs(tags) do tag_names[t] = true end -- drafts count, so colors match with --drafts
+
       if DRAFTS or meta.draft ~= true then
         local html, toc, has_code = render_markdown(body)
         local text = plain_text(html)
-        local tags = type(meta.tags) == "table" and meta.tags or (meta.tags and { meta.tags }) or {}
         local p = {
           file = where,
           series = series,
@@ -244,6 +285,7 @@ for i, name in ipairs(fs.dirs("posts")) do
     assert(numbers[n], dir .. ": #" .. n .. " is missing; numbers run 1, 2, 3, ... with no gaps")
   end
 
+  all_series[#all_series + 1] = series
   if #series.posts > 0 then
     table.sort(series.posts, function(a, b) return a.number < b.number end)
     series.count = entries(#series.posts)
@@ -251,6 +293,10 @@ for i, name in ipairs(fs.dirs("posts")) do
     series_list[#series_list + 1] = series
   end
 end
+
+-- series colors never repeat; drafts count, so --drafts does not recolor anything
+for _, series in ipairs(all_series) do series.pin, series.color = series.color, nil end
+unique_colors(all_series, function(series) return "posts/" .. series.name .. "/index.md" end)
 
 table.sort(posts, function(a, b)
   if a.date ~= b.date then return a.date > b.date end
@@ -303,6 +349,15 @@ table.sort(tags, function(a, b)
   if #by_tag[a] ~= #by_tag[b] then return #by_tag[a] > #by_tag[b] end
   return a < b
 end)
+
+do
+  local items = {}
+  for name in pairs(tag_names) do items[#items + 1] = { name = name, pin = site.tags[name] } end
+  table.sort(items, function(a, b) return a.name < b.name end)
+  unique_colors(items, function(item) return "site.lua tags." .. item.name end)
+  for _, item in ipairs(items) do tag_colors[item.name] = item.color end
+  for _, item in ipairs(tag_items) do item.color = tag_colors[item.name] end
+end
 
 local function all_tags(current)
   local out = {}

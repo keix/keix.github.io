@@ -40,7 +40,7 @@ draft: true               # skipped unless built with --drafts
 title: Moonquakes
 lead: シリーズの一覧ページとカードに出る説明。
 repo: https://github.com/keix/moonquakes
-color: yellow             # yellow, pink, cyan, lavender, lime or orange
+color: yellow             # one of the 30 names in build.lua (SERIES_COLORS) or #RRGGBB; unique per series
 ---
 シリーズの紹介文。
 ```

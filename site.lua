@@ -22,14 +22,14 @@ return {
     recent = 3, -- cards after the featured post
   },
 
-  -- Tag colors. Tags not listed here get a color from the palette in turn.
+  -- Tag colors: a palette name or #RRGGBB, unique per tag. Unlisted tags get a free one.
   tags = {
     lua = "yellow",
     zig = "pink",
-    os = "cyan",
+    os = "azure",
     gentoo = "lavender",
-    vim = "lime",
-    essay = "orange",
+    vim = "mint",
+    essay = "coral",
     nix = "cyan",
     forth = "orange",
     c = "lime",
