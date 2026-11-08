@@ -14,7 +14,7 @@ profile:
   - LIKE: Anime, Surfing
   - ADDRESS: Kobe, Japan
 motto: Simple is better than complex.
-story: きっかけは、ある現場のチャンネルでした。夜な夜なコードを書いたり読んだりしたことを、そこで少しずつ共有し始めたのが始まりです。閉じたチャンネルの中だけで終わらせず、世界に向けて書くことにしました。
+story: きっかけは、あるチャンネルでした。夜な夜なコードを書いたり読んだりしたことを、そこで少しずつ共有し始めたのが始まりです。閉じたチャンネルの中だけで終わらせず、世界に向けて書くことにしました。
 work_name: KEIX Co., Ltd.
 work_url: https://9th.tokyo/
 work_label: 9th.tokyo
