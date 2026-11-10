@@ -400,7 +400,9 @@ local function wave()
     return tonumber(date:sub(1, 4)) * 12 + tonumber(date:sub(6, 7)) - 1
   end
   local last = month_index(os.date("%Y-%m-%d"))
-  local first = math.max(math.min(month_index(posts[#posts].date), last - 11), last - 35)
+  -- start at the first post, so a young site is not drawn as a long flat line;
+  -- at least 3 months, so a single busy month still reads as a rise, and at most 3 years
+  local first = math.max(math.min(month_index(posts[#posts].date), last - 2), last - 35)
   local span = last - first + 1
 
   local active = {}
@@ -440,6 +442,19 @@ local function wave()
     return seed / 2147483648
   end
 
+  -- the wave is a chart, so each series keeps its own hue, only slightly greyed
+  local function hush(hx)
+    local out = {}
+    for i, g in ipairs({ 0x95, 0x91, 0x8A }) do
+      local c = tonumber(hx:sub(2 * i, 2 * i + 1), 16)
+      out[i] = string.format("%02X", math.floor(c * 0.85 + g * 0.15 + 0.5))
+    end
+    return "#" .. table.concat(out)
+  end
+  for _, entry in ipairs(shown) do
+    entry.color = entry.name == "other" and "#5A5853" or hush(entry.color)
+  end
+
   local lines = {}
   for t, entry in ipairs(shown) do
     local counts = {}
@@ -471,7 +486,7 @@ local function wave()
   -- legend in rank order, drawing order reversed so the top series is on top
   local legend = {}
   for i = #lines, 1, -1 do legend[#legend + 1] = lines[i] end
-  return { lines = lines, legend = legend, from = label(first), to = label(last) }
+  return { lines = lines, legend = legend, range = label(first) .. " – " .. label(last) }
 end
 
 ---------------------------------------------------------------------------
