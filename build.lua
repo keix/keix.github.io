@@ -24,15 +24,15 @@ for _, a in ipairs(arg or {}) do
 end
 
 local HEX = {
-  yellow = "#FFD84D", pink = "#FF6FB5", cyan = "#4FD8F0", lavender = "#B79CFF",
-  lime = "#B6F36B", orange = "#FF8A3D", ink = "#F4F2FF", muted = "#B9B5DE",
-  -- 24 more for series, picked to stay apart from the six above and from each other
-  grass = "#62AE45", azure = "#00A2F0", blush = "#FFB6C7", mustard = "#C3B438",
-  teal = "#00B5B2", periwinkle = "#BFCCFF", orchid = "#C772CF", mint = "#9AE5B6",
-  coral = "#EA6A66", amber = "#C68D00", jade = "#59CB8B", iris = "#7F8CF9",
-  peach = "#FFC28E", cornflower = "#77B2FF", salmon = "#FD8A8F", mauve = "#E38FDB",
-  straw = "#D7D688", tangerine = "#E2781F", lilac = "#EDBDFC", olive = "#A39E00",
-  aqua = "#00CDBE", emerald = "#00B685", rose = "#E46894", violet = "#A87EEB",
+  yellow = "#F1DA92", pink = "#DF8CB0", cyan = "#8BD1DE", lavender = "#B3A5E0",
+  lime = "#C6EB9F", orange = "#E19B73", ink = "#EDE9E2", muted = "#95918A",
+  -- 24 more for series and tags, muted to sit on the dark ground like the six above
+  grass = "#7AA66C", azure = "#5FA0CE", blush = "#ECC0C9", mustard = "#BBB474",
+  teal = "#65ADAA", periwinkle = "#C5CDEC", orchid = "#B584BA", mint = "#B2DDC1",
+  coral = "#CD807B", amber = "#B5935A", jade = "#84C19B", iris = "#8893D3",
+  peach = "#EDC8AA", cornflower = "#8FB2E0", salmon = "#E19C9D", mauve = "#D09ECB",
+  straw = "#D4D4A7", tangerine = "#C7885E", lilac = "#E2C6EB", olive = "#9E9D5B",
+  aqua = "#73C3B9", emerald = "#63AC8E", rose = "#C97F96", violet = "#A18BCB",
 }
 local PALETTE = { "yellow", "pink", "cyan", "lavender", "lime", "orange" }
 -- series and tags each draw from these 30, so no two series and no two tags share one
