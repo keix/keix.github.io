@@ -2,7 +2,7 @@
 title: About
 heading_html: I'm just<br>a <span class="accent-pink">Geek</span><span class="accent-yellow">!</span>
 lead: Kei Sawamura です。神戸でプログラマ / インフラエンジニアをしています。POSIX が好きで組み込みも書きます。好きな System Call は fork です。眠れない夜は、たいてい Vim で何かを書いています。
-summary: I'm just a Geek! 神戸在住のプログラマ / インフラエンジニア。Vocaloid、アニメ、サーフィンが好き。
+summary: 神戸在住のプログラマ、アニメが好き。
 avatar: /img/keix.jpeg
 birthday: 1979-01-10
 roles: [Programmer, Infrastructure Engineer]
